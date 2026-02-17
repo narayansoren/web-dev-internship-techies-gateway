@@ -24,6 +24,7 @@ const cancelBtn = document.querySelector(".cancel-btn");
 init();
 
 function init() {
+  loadFromLocalStorage();
   renderNotes();
   attachEventListeners();
 }
@@ -73,6 +74,7 @@ function handleFormSubmit(e) {
   };
 
   notes.push(newNote);
+  saveToLocalStorage();
   renderNotes();
   closeModal();
 }
@@ -99,6 +101,21 @@ function handleOverlayClick(e) {
 /************************************************
  * 6️ LOCAL STORAGE FUNCTIONS
  ************************************************/
+
+function loadFromLocalStorage() {
+  try {
+    const saved = localStorage.getItem("notes");
+    if (saved) {
+      notes = JSON.parse(saved);
+    }
+  } catch (error) {
+    notes = [];
+  }
+}
+
+function saveToLocalStorage() {
+  localStorage.setItem("notes", JSON.stringify(notes));
+}
 
 /************************************************
  * 7️ HELPERS
