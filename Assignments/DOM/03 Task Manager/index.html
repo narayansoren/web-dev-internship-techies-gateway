@@ -16,9 +16,44 @@
         <!-- NO NOTES SECTION -->
       </section>
 
-      <button class="add-note-btn">+</button>
-    </main>
+      <!-- ADD NOTES -->
+      <button class="add-note-btn">
+        <img
+          src="./images/add_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24.png"
+          alt="add notes"
+          class="add-btn-icon"
+        />
+      </button>
 
+      <!-- MODAL OVERLAY -->
+      <div class="modal-overlay">
+        <div class="modal">
+          <form class="note-form">
+            <label for="title">Title</label>
+            <input
+              class="title-input"
+              type="text"
+              id="title"
+              name="title"
+              required
+            />
+
+            <label for="description">Description</label>
+            <textarea
+              class="desc-input"
+              id="description"
+              name="description"
+              required
+            ></textarea>
+
+            <div class="modal-actions">
+              <button type="button" class="cancel-btn">Cancel</button>
+              <button type="submit" class="save-btn">Save</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
     <script src="script.js"></script>
   </body>
 </html>
