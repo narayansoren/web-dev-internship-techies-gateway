@@ -35,6 +35,10 @@ function init() {
 function attachEventListeners() {
   addBtn.addEventListener("click", openModal);
   cancelBtn.addEventListener("click", closeModal);
+  form.addEventListener("submit", handleFormSubmit);
+
+  // Ctrl + Enter to submit inside textarea
+  descInput.addEventListener("keydown", handleTextareaShortcut);
 
   document.addEventListener("keydown", handleEscapeKey);
   modalOverlay.addEventListener("click", handleOverlayClick);
@@ -52,6 +56,32 @@ function openModal() {
 function closeModal() {
   modalOverlay.classList.remove("active");
   form.reset();
+}
+
+function handleFormSubmit(e) {
+  e.preventDefault();
+
+  const title = titleInput.value.trim();
+  const description = descInput.value.trim();
+
+  if (!title || !description) return;
+
+  const newNote = {
+    title,
+    description,
+    date: new Date().toISOString(),
+  };
+
+  notes.push(newNote);
+  renderNotes();
+  closeModal();
+}
+
+function handleTextareaShortcut(e) {
+  if (e.key === "Enter" && e.ctrlKey) {
+    e.preventDefault();
+    form.requestSubmit();
+  }
 }
 
 function handleEscapeKey(e) {
@@ -74,10 +104,55 @@ function handleOverlayClick(e) {
  * 7️ HELPERS
  ************************************************/
 
+function formatDate(dateString) {
+  return new Date(dateString).toLocaleDateString("en-US", {
+    month: "long",
+    day: "numeric",
+    year: "numeric",
+  });
+}
+
 /************************************************
  * 8️ RENDERING
  ************************************************/
 
 function renderNotes() {
   notesCont.innerHTML = "";
+
+  if (notes.length === 0) {
+    renderEmptyState();
+    return;
+  }
+
+  [...notes].reverse().forEach((note) => {
+    const card = document.createElement("div");
+    card.classList.add("note-card");
+
+    const titleEl = document.createElement("h2");
+    titleEl.textContent = note.title;
+
+    const descEl = document.createElement("p");
+    descEl.textContent = note.description;
+
+    const dateEl = document.createElement("span");
+    dateEl.textContent = formatDate(note.date);
+
+    card.append(titleEl, descEl, dateEl);
+    notesCont.append(card);
+  });
+}
+
+function renderEmptyState() {
+  const empty = document.createElement("div");
+  empty.classList.add("no-notes");
+
+  const img = document.createElement("img");
+  img.src = "./images/stylus_note.png";
+  img.alt = "No notes";
+
+  const text = document.createElement("span");
+  text.textContent = "No notes here yet";
+
+  empty.append(img, text);
+  notesCont.append(empty);
 }
