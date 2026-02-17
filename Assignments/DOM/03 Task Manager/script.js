@@ -32,7 +32,51 @@ function init() {
  * 4️ EVENT LISTENERS
  ************************************************/
 
-function attachEventListeners() {}
+function attachEventListeners() {
+  addBtn.addEventListener("click", openModal);
+  cancelBtn.addEventListener("click", closeModal);
+
+  document.addEventListener("keydown", handleEscapeKey);
+  modalOverlay.addEventListener("click", handleOverlayClick);
+}
+
+/************************************************
+ * 5️ EVENT HANDLERS
+ ************************************************/
+
+function openModal() {
+  modalOverlay.classList.add("active");
+  titleInput.focus();
+}
+
+function closeModal() {
+  modalOverlay.classList.remove("active");
+  form.reset();
+}
+
+function handleEscapeKey(e) {
+  if (e.key === "Escape" && modalOverlay.classList.contains("active")) {
+    closeModal();
+  }
+}
+
+function handleOverlayClick(e) {
+  if (e.target === modalOverlay) {
+    closeModal();
+  }
+}
+
+/************************************************
+ * 6️ LOCAL STORAGE FUNCTIONS
+ ************************************************/
+
+/************************************************
+ * 7️ HELPERS
+ ************************************************/
+
+/************************************************
+ * 8️ RENDERING
+ ************************************************/
 
 function renderNotes() {
   notesCont.innerHTML = "";
