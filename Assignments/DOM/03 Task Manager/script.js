@@ -41,7 +41,9 @@ function attachEventListeners() {
   // Ctrl + Enter to submit inside textarea
   descInput.addEventListener("keydown", handleTextareaShortcut);
 
+  // Escape key
   document.addEventListener("keydown", handleEscapeKey);
+
   modalOverlay.addEventListener("click", handleOverlayClick);
 }
 
