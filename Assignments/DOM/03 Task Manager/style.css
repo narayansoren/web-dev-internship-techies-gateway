@@ -332,3 +332,64 @@ button:focus-visible {
   outline: 2px solid var(--accent-strong);
   outline-offset: 2px;
 }
+
+/* ==========================
+   EDITOR VIEW
+========================== */
+
+.editor-view {
+  position: fixed;
+  inset: 0;
+
+  /* background: var(--bg-main); */
+  background: #000;
+
+  display: flex;
+  flex-direction: column;
+
+  padding: var(--space-md);
+  z-index: 1000;
+}
+
+.editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-bottom: var(--space-md);
+}
+
+.editor-header button {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.editor-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.editor-view .note-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+.editor-view input,
+.editor-view textarea {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-size: 18px;
+}
+
+.editor-view textarea {
+  resize: none;
+  flex: 1;
+}
+
+.hidden {
+  display: none !important;
+}

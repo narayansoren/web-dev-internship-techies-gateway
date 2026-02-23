@@ -14,6 +14,32 @@
       <section id="notes-cont">
         <!-- NO NOTES SECTION -->
       </section>
+
+      <!-- EDITOR VIEW -->
+      <section class="editor-view hidden">
+        <header class="editor-header">
+          <button type="button" class="back-btn">←</button>
+
+          <div class="editor-actions">
+            <button type="button" class="menu-btn">⋮</button>
+            <button type="submit" form="note-form" class="top-save-btn hidden">
+              🗸
+            </button>
+          </div>
+        </header>
+
+        <form id="note-form" class="note-form">
+          <input
+            class="title-input"
+            type="text"
+            placeholder="Title"
+            maxlength="20"
+          />
+
+          <textarea class="desc-input" placeholder="Description"></textarea>
+        </form>
+      </section>
+
       <!-- ADD NOTES -->
       <button class="add-note-btn">
         <img
@@ -22,37 +48,37 @@
           class="add-btn-icon"
         />
       </button>
-
-      <!-- MODAL OVERLAY -->
-      <div class="modal-overlay">
-        <div class="modal">
-          <form class="note-form">
-            <label for="title">Title</label>
-            <input
-              class="title-input"
-              type="text"
-              id="title"
-              name="title"
-              required
-              maxlength="20"
-            />
-
-            <label for="description">Description</label>
-            <textarea
-              class="desc-input"
-              id="description"
-              name="description"
-              required
-            ></textarea>
-
-            <div class="modal-actions">
-              <button type="button" class="cancel-btn">Cancel</button>
-              <button type="submit" class="save-btn">Save</button>
-            </div>
-          </form>
-        </div>
-      </div>
     </main>
     <script src="script.js"></script>
   </body>
 </html>
+
+<!-- MODAL OVERLAY -->
+<!-- <div class="modal-overlay">
+          <div class="modal">
+            <form class="note-form">
+              <label for="title">Title</label>
+              <input
+                class="title-input"
+                type="text"
+                id="title"
+                name="title"
+                required
+                maxlength="20"
+              />
+  
+              <label for="description">Description</label>
+              <textarea
+                class="desc-input"
+                id="description"
+                name="description"
+                required
+              ></textarea>
+  
+              <div class="modal-actions">
+                <button type="button" class="cancel-btn">Cancel</button>
+                <button type="submit" class="save-btn">Save</button>
+              </div>
+            </form>
+          </div>
+        </div> -->

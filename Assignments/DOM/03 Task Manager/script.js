@@ -10,12 +10,19 @@ let notes = [];
 
 const notesCont = document.querySelector("#notes-cont");
 const addBtn = document.querySelector(".add-note-btn");
-const modalOverlay = document.querySelector(".modal-overlay");
+const editorView = document.querySelector(".editor-view");
 
 const form = document.querySelector(".note-form");
 const titleInput = document.querySelector(".title-input");
 const descInput = document.querySelector(".desc-input");
-const cancelBtn = document.querySelector(".cancel-btn");
+
+const backBtn = document.querySelector(".back-btn");
+const menuBtn = document.querySelector(".menu-btn");
+const topSaveBtn = document.querySelector(".top-save-btn");
+
+let currentEditingId = null;
+let originalTitle = "";
+let originalDescription = "";
 
 /************************************************
  * 3️ INITIALIZATION
@@ -34,51 +41,41 @@ function init() {
  ************************************************/
 
 function attachEventListeners() {
-  addBtn.addEventListener("click", openModal);
-  cancelBtn.addEventListener("click", closeModal);
+  // backBtn.addEventListener("click", handleBackAction);
+  // form.addEventListener("submit", handleSaveAction);
+
+  titleInput.addEventListener("input", updateDirtyState);
+  descInput.addEventListener("input", updateDirtyState);
+
+  addBtn.addEventListener("click", openEditorForCreate);
+  backBtn.addEventListener("click", handleBackAction);
   form.addEventListener("submit", handleFormSubmit);
 
-  // Ctrl + Enter to submit inside textarea
-  descInput.addEventListener("keydown", handleTextareaShortcut);
-
-  // Escape key
-  document.addEventListener("keydown", handleEscapeKey);
-
-  modalOverlay.addEventListener("click", handleOverlayClick);
+  notesCont.addEventListener("click", handleCardClick);
 }
 
 /************************************************
  * 5️ EVENT HANDLERS
  ************************************************/
 
-function openModal() {
-  modalOverlay.classList.add("active");
-  titleInput.focus();
-}
-
-function closeModal() {
-  modalOverlay.classList.remove("active");
-  form.reset();
-}
-
 function handleFormSubmit(e) {
   e.preventDefault();
+  saveCurrentNote();
+  closeEditor();
+}
 
-  const title = titleInput.value.trim();
-  const description = descInput.value.trim();
+function handleBackAction() {
+  const currentTitle = titleInput.value.trim();
+  const currentDesc = descInput.value.trim();
 
-  if (!title || !description) return;
+  const isDirty =
+    currentTitle !== originalTitle || currentDesc !== originalDescription;
 
-  const newNote = {
-    title,
-    description,
-    date: new Date().toISOString(),
-  };
+  if (isDirty) {
+    saveCurrentNote();
+  }
 
-  notes.push(newNote);
-  saveToLocalStorage();
-  renderNotes();
-  closeModal();
+  closeEditor();
 }
 
 function handleTextareaShortcut(e) {
@@ -88,16 +85,100 @@ function handleTextareaShortcut(e) {
   }
 }
 
-function handleEscapeKey(e) {
-  if (e.key === "Escape" && modalOverlay.classList.contains("active")) {
-    closeModal();
+function handleCardClick(e) {
+  const card = e.target.closest(".note-card");
+  if (!card) return;
+
+  const id = card.dataset.id;
+  openEditorForEdit(id);
+}
+
+function openEditorForCreate() {
+  currentEditingId = null;
+  originalTitle = "";
+  originalDescription = "";
+
+  form.reset();
+
+  notesCont.classList.add("hidden");
+  editorView.classList.remove("hidden");
+
+  titleInput.focus();
+
+  updateDirtyState();
+}
+
+function closeEditor() {
+  editorView.classList.add("hidden");
+  notesCont.classList.remove("hidden");
+}
+
+function updateDirtyState() {
+  const currentTitle = titleInput.value.trim();
+  const currentDesc = descInput.value.trim();
+
+  const isDirty =
+    currentTitle !== originalTitle || currentDesc !== originalDescription;
+
+  if (isDirty) {
+    topSaveBtn.classList.remove("hidden");
+    menuBtn.classList.add("hidden");
+  } else {
+    topSaveBtn.classList.add("hidden");
+    menuBtn.classList.remove("hidden");
   }
 }
 
-function handleOverlayClick(e) {
-  if (e.target === modalOverlay) {
-    closeModal();
+function saveCurrentNote() {
+  const title = titleInput.value.trim();
+  const description = descInput.value.trim();
+
+  if (!title && !description) return;
+
+  if (currentEditingId === null) {
+    // CREATE
+    const newNote = {
+      id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+      title,
+      description,
+      date: new Date().toISOString(),
+    };
+
+    notes.push(newNote);
+  } else {
+    // UPDATE
+    notes = notes.map((note) => {
+      if (note.id === currentEditingId) {
+        return {
+          ...note,
+          title,
+          description,
+        };
+      }
+      return note;
+    });
   }
+
+  saveToLocalStorage();
+  renderNotes();
+}
+
+function openEditorForEdit(id) {
+  const note = notes.find((note) => note.id === id);
+  if (!note) return;
+
+  currentEditingId = id;
+
+  titleInput.value = note.title;
+  descInput.value = note.description;
+
+  originalTitle = note.title;
+  originalDescription = note.description;
+
+  notesCont.classList.add("hidden");
+  editorView.classList.remove("hidden");
+
+  updateDirtyState();
 }
 
 /************************************************
@@ -108,7 +189,11 @@ function loadFromLocalStorage() {
   try {
     const saved = localStorage.getItem("notes");
     if (saved) {
-      notes = JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+
+      if (Array.isArray(parsed)) {
+        notes = parsed;
+      }
     }
   } catch (error) {
     notes = [];
@@ -143,22 +228,31 @@ function renderNotes() {
     return;
   }
 
-  [...notes].reverse().forEach((note) => {
-    const card = document.createElement("div");
-    card.classList.add("note-card");
+  const fragment = document.createDocumentFragment();
 
-    const titleEl = document.createElement("h2");
-    titleEl.textContent = note.title;
+  notes
+    .slice()
+    .reverse()
+    .forEach((note) => {
+      const card = document.createElement("div");
+      card.classList.add("note-card");
 
-    const descEl = document.createElement("p");
-    descEl.textContent = note.description;
+      card.dataset.id = note.id;
 
-    const dateEl = document.createElement("span");
-    dateEl.textContent = formatDate(note.date);
+      const titleEl = document.createElement("h2");
+      titleEl.textContent = note.title;
 
-    card.append(titleEl, descEl, dateEl);
-    notesCont.append(card);
-  });
+      const descEl = document.createElement("p");
+      descEl.textContent = note.description;
+
+      const dateEl = document.createElement("span");
+      dateEl.textContent = formatDate(note.date);
+
+      card.append(titleEl, descEl, dateEl);
+      fragment.append(card);
+    });
+
+  notesCont.append(fragment);
 }
 
 function renderEmptyState() {
@@ -167,7 +261,7 @@ function renderEmptyState() {
 
   const img = document.createElement("img");
   img.src = "./images/stylus_note.png";
-  img.alt = "No notes";
+  img.alt = "Pen image";
 
   const text = document.createElement("span");
   text.textContent = "No notes here yet";
