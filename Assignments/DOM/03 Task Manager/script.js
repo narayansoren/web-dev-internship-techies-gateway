@@ -181,6 +181,12 @@ function openEditorForEdit(id) {
   updateDirtyState();
 }
 
+function deleteNoteById(id) {
+  notes = notes.filter((note) => note.id !== id);
+  saveToLocalStorage();
+  renderNotes();
+}
+
 /************************************************
  * 6️ LOCAL STORAGE FUNCTIONS
  ************************************************/
