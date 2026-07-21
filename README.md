@@ -7,7 +7,7 @@ It includes structured notes, hands-on practice, assignments, and mini-projects 
 
 You can view the live GitHub Pages site for this repository here:  
 
-👉 https://itz-xd.github.io/web-dev-internship-techies-gateway/
+👉 https://narayansoren.github.io/web-dev-internship-techies-gateway/
 
 ## 📦 Projects
 
